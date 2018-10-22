@@ -16,35 +16,130 @@ namespace PPT
     {
         static void Main(string[] args)
         {
+            /*string fileToUpdate = @"C:\Users\ondero\Desktop\Projects\decks\niki.pptx";
+
+            UpdateFileKeepSlides(fileToUpdate, new List<int> { 2,3});
+
+            return;*/
             //Create and save the file
-            string filepath = @"C:\Users\oza\Documents\yokol.pptx";
+            string filepath = @"C:\Users\ondero\Desktop\Projects\decks\masterDeck.pptx";
             CreatePresentation(filepath);
 
-            string ppt1 = @"C:\Users\oza\Desktop\oauth-0.pptx";
-            string ppt2 = @"C:\Users\oza\Desktop\ppt2.pptx";
+            string ppt1 = @"C:\Users\ondero\Desktop\Projects\decks\energy.pptx";//keep 7,8,9, types of wires
+            string ppt2 = @"C:\Users\ondero\Desktop\Projects\decks\wine.pptx"; //keep1-5 2015winegrowing report--world wineyards 2014
+            string ppt3 = @"C:\Users\ondero\Desktop\Projects\decks\firms.pptx"; //keep 9--world map
 
+            UpdateFileKeepSlides(ppt1, new List<int> { 7,8,9});
+            UpdateFileKeepSlides(ppt2, new List<int> { 1,5});
+            UpdateFileKeepSlides(ppt3, new List<int> { 9});
 
-            //Add other decks
             new MergeHandler().MergeAllSlides(filepath, filepath, new List<PresentationInfo>()
             {
                 new PresentationInfo()
                 {
                     File = ppt1,
-                    InsertPosition = 2
+                    InsertPosition = 1
+                }
+            });
+
+
+            new MergeHandler().MergeAllSlides(filepath, filepath, new List<PresentationInfo>()
+            {
+                new PresentationInfo()
+                {
+                    File = ppt2,
+                    InsertPosition = 4
+                }
+            });
+
+            new MergeHandler().MergeAllSlides(filepath, filepath, new List<PresentationInfo>()
+            {
+                new PresentationInfo()
+                {
+                    File = ppt3,
+                    InsertPosition = 6
+                }
+            });
+
+            /* using (PresentationDocument presentationDocument = PresentationDocument.Open(filepath, true))
+             {
+                 DeleteSlide(presentationDocument, new MergeHandler().GetTotalSlidesCount(filepath)-1);
+
+             }
+
+             return;*/
+
+
+
+
+
+
+            //Add other decks
+            /*new MergeHandler().MergeAllSlides(filepath, filepath, new List<PresentationInfo>()
+            {
+                new PresentationInfo()
+                {
+                    File = ppt1,
+                    InsertPosition = 1
                 },
 
                 new PresentationInfo()
                 {
                     File = ppt2,
                     InsertPosition = 3
+                },
+
+                new PresentationInfo()
+                {
+                    File = ppt3,
+                    InsertPosition = 8
                 }
-            });
+            });*/
 
             //remove the first slide from the file
-            using (PresentationDocument presentationDocument = PresentationDocument.Open(filepath, true))
+            /*using (PresentationDocument presentationDocument = PresentationDocument.Open(filepath, true))
             {
                 DeleteSlide(presentationDocument, 0);
+            }*/
+        }
+
+        //remove all the slides but keep the ones from slidesToKeep
+        //SlidesTokKeep indexed from 1
+        public static void UpdateFileKeepSlides(string presentationFile, List<int> slidesToKeep)
+        {
+            slidesToKeep.Sort();
+            var slideCount = new MergeHandler().GetTotalSlidesCount(presentationFile);
+            int index = 0;
+            var finalSlideCount = slidesToKeep.Count();
+
+            slidesToKeep = slidesToKeep.Select(x => { if (x != 0) { x = x - 1; } return x; }).ToList();
+
+
+            using (PresentationDocument presentationDocument = PresentationDocument.Open(presentationFile, true))
+            {
+               while(slideCount != finalSlideCount)
+               {
+                    if(!slidesToKeep.Contains(index))
+                    {
+                        DeleteSlide(presentationDocument, index);
+                        slidesToKeep = slidesToKeep.Select(x => { if (x != 0) { x = x - 1; } return x; }).ToList();
+                        slideCount--;
+                    }
+                    else
+                    {
+                        index++;
+                    }
+               }
+                
             }
+
+            /* using (PresentationDocument presentationDocument = PresentationDocument.Open(presentationFile, true))
+             {
+
+                 // DeleteSlide(presentationDocument, 12); //deleted 11th slide
+                 DeleteSlide(presentationDocument, 9);
+                 DeleteSlide(presentationDocument, 10);
+             }*/
         }
 
         // Delete the specified slide from the presentation.
@@ -66,8 +161,11 @@ namespace PPT
             // Get the relationship ID of the slide.
             string slideRelId = slideId.RelationshipId;
 
+
             // Remove the slide from the slide list.
             slideIdList.RemoveChild(slideId);
+
+
         }
 
         public static void CreatePresentation(string filepath)

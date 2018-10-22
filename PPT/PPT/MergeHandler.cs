@@ -63,7 +63,7 @@ namespace SlideMerge
             }
         }
 
-        private int GetTotalSlidesCount(string presentationFile)
+        public int GetTotalSlidesCount(string presentationFile)
         {
             using (PresentationDocument prstDoc = PresentationDocument.Open(presentationFile, false))
             {
